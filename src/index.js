@@ -1,49 +1,72 @@
-import fetchImages  from './js/apiService';
-// import { fetchImages, incrementPage, resetPage } from './js/apiService';
+import fetchImages from './js/apiService';
 import imageMarkup from './templates/imagemarkup.hbs';
 import styles from './css/styles.css';
-const debounce = require('lodash.debounce');
+// const debounce = require('lodash.debounce');
 
 const refs = {
     input: document.querySelector('#search-form'),
     gallery: document.querySelector('.gallery'),
-    loadMoreBtn: document.querySelector('button.load-more')
+    loadMoreBtn: document.querySelector('[data-action="load-more"]'),
+    searchBtn: document.querySelector('.search-btn')
 }
 
-refs.input.addEventListener('input', debounce(onInput, 500));
+// refs.input.addEventListener('input', debounce(onInput, 500));
+refs.input.addEventListener('submit', onInput);
 refs.loadMoreBtn.addEventListener('click', onClickLoadMore);
-// console.log(refs.input);
 
 let pageNumber = 1;
 let searchQuery = '';
+
+function onInput(evt) {
+    evt.preventDefault();
+    searchQuery = evt.currentTarget.elements.query.value.trim()
+    // searchQuery = evt.target.value.toLowerCase().trim();
+    if (searchQuery === '') {
+        return
+    }
+    refs.searchBtn.disabled = true;
+    refs.gallery.innerHTML = '';
+    fetchImages(searchQuery)
+        .then((data) => {
+            renderMarkup(data)
+            refs.searchBtn.disabled = false
+            refs.loadMoreBtn.classList.remove('is-hidden');
+        })
+
+}
+
+function renderMarkup({ hits }) {
+    refs.gallery.insertAdjacentHTML('beforeend', imageMarkup(hits))
+}
+
+function onClickLoadMore() {
+    incrementPage();
+    fetchImages(searchQuery, pageNumber)
+        .then((images) =>  {
+            renderMarkup(images)
+            smoothScrolling()
+        })
+}
+
+function smoothScrolling() {
+    refs.loadMoreBtn.scrollIntoView({
+        behavior: 'smooth',
+        block: 'end',
+    })
+}
 
 function incrementPage() {
     pageNumber += 1;
 }
 
-function resetPage() {
-    pageNumber = 1;
-}
+// function resetPage() {
+//     pageNumber = 1;
+// }
+// function checkLastPage() {
+    //     fro
+    //     frown
+    // }
 
-function onInput(evt) {
-    searchQuery = evt.target.value.toLowerCase().trim();
-    // console.log(normilizedInput);
-    if (searchQuery !== '') {
-        fetchImages(searchQuery)
-            .then(renderMarkup)
-    }
-    refs.loadMoreBtn.classList.remove('is-hidden')
-}
-// console.log(refs.gallery);
-function renderMarkup({ hits }) {
-    // console.log(imageMarkup(hits));
-    refs.gallery.insertAdjacentHTML('beforeend', imageMarkup(hits))
-        // innerHTML = imageMarkup(hits)
-}
-
-function onClickLoadMore() {
-    // console.log(evt.currentTarget);
-    incrementPage();
-    fetchImages(searchQuery, pageNumber)
-        .then((images) => renderMarkup(images));
-}
+// function changeInput(value) {
+//     searchQuery = value;
+// }
