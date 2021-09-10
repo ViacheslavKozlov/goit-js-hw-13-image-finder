@@ -1,7 +1,6 @@
 import fetchImages from './js/apiService';
 import imageMarkup from './templates/imagemarkup.hbs';
 import styles from './css/styles.css';
-// const debounce = require('lodash.debounce');
 
 const refs = {
     input: document.querySelector('#search-form'),
@@ -10,7 +9,6 @@ const refs = {
     searchBtn: document.querySelector('.search-btn')
 }
 
-// refs.input.addEventListener('input', debounce(onInput, 500));
 refs.input.addEventListener('submit', onInput);
 refs.loadMoreBtn.addEventListener('click', onClickLoadMore);
 
@@ -20,7 +18,6 @@ let searchQuery = '';
 function onInput(evt) {
     evt.preventDefault();
     searchQuery = evt.currentTarget.elements.query.value.trim()
-    // searchQuery = evt.target.value.toLowerCase().trim();
     if (searchQuery === '') {
         return
     }
@@ -32,7 +29,6 @@ function onInput(evt) {
             refs.searchBtn.disabled = false
             refs.loadMoreBtn.classList.remove('is-hidden');
         })
-
 }
 
 function renderMarkup({ hits }) {
@@ -58,15 +54,3 @@ function smoothScrolling() {
 function incrementPage() {
     pageNumber += 1;
 }
-
-// function resetPage() {
-//     pageNumber = 1;
-// }
-// function checkLastPage() {
-    //     fro
-    //     frown
-    // }
-
-// function changeInput(value) {
-//     searchQuery = value;
-// }
